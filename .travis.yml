@@ -1,0 +1,45 @@
+language: python
+sudo: false
+cache: pip
+
+env:
+  global:
+    PYTHONUNBUFFERED=yes
+
+matrix:
+  fast_finish: true
+  include:
+    - python: 2.7
+      env: TOXENV=2.7
+    - python: pypy
+      env: TOXENV=pypy
+    - python: 3.4
+      env: TOXENV=3.4
+    - python: 3.5
+      env: TOXENV=3.5
+    - python: 3.6
+      env: TOXENV=3.6
+    - python: 2.7
+      env: TOXENV=flake8
+    - python: 3.6
+      env: TOXENV=flake8
+    - python: 2.7
+      env: TOXENV=flakeplus
+    - python: 2.7
+      env: TOXENV=pydocstyle
+    - python: 2.7
+      env: TOXENV=apicheck
+
+install:
+  - pip install -U pip setuptools wheel | cat
+  - pip install -U tox | cat
+script: tox -v -- -v
+after_success:
+  - .tox/$TRAVIS_PYTHON_VERSION/bin/coverage xml
+  - .tox/$TRAVIS_PYTHON_VERSION/bin/codecov -e TOXENV
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#celery"
+    on_success: change
+    on_failure: change
